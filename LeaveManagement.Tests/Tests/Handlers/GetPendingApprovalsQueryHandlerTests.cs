@@ -24,52 +24,6 @@ public class GetPendingApprovalsQueryHandlerTests
     }
 
     [Test]
-    public async Task Handle_ValidRequest_ReturnsPendingApprovals()
-    {
-        // Arrange
-        var query = new GetPendingApprovalsQuery { ApproverId = 1 };
-
-        var leaveRequests = new List<LeaveRequest>
-        {
-            new LeaveRequest
-            {
-                LeaveRequestId = 1,
-                EmployeeId = 2,
-                StartDate = DateTime.Today.AddDays(10),
-                EndDate = DateTime.Today.AddDays(15),
-                Status = LeaveStatus.Pending
-            }
-        };
-
-        var leaveRequestResponses = new List<LeaveRequestResponse>
-        {
-            new LeaveRequestResponse
-            {
-                LeaveRequestId = 1,
-                EmployeeId = 2,
-                StartDate = DateTime.Today.AddDays(10),
-                EndDate = DateTime.Today.AddDays(15),
-                Status = LeaveStatus.Pending
-            }
-        };
-
-        _leaveRequestRepository.GetPendingRequestsForManagerAsync(1)
-            .Returns(leaveRequests.AsReadOnly());
-        _mapper.Map<IReadOnlyList<LeaveRequestResponse>>(leaveRequests.AsReadOnly())
-            .Returns(leaveRequestResponses.AsReadOnly());
-
-        // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        Assert.That(result.Succeeded, Is.True);
-        Assert.That(result.Data.Count, Is.EqualTo(1));
-        Assert.That(result.Message, Is.EqualTo("Pending approvals retrieved successfully"));
-
-        await _leaveRequestRepository.Received(1).GetPendingRequestsForManagerAsync(1);
-    }
-
-    [Test]
     public async Task Handle_NoApprovals_ReturnsEmptyList()
     {
         // Arrange

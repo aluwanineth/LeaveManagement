@@ -108,4 +108,117 @@ public class LeaveRequestControllerTests
         Assert.That(result, Is.InstanceOf<OkObjectResult>());
         await _mediator.Received(1).Send(Arg.Any<ApproveLeaveRequestCommand>());
     }
+
+    [Test]
+    public async Task GetLeaveRequestsByEmployee_ValidEmployeeId_ReturnsOkResult()
+    {
+        // Arrange
+        var expectedResponse = new Response<IReadOnlyList<LeaveRequestResponse>>(
+            new List<LeaveRequestResponse>().AsReadOnly());
+        _mediator.Send(Arg.Any<GetLeaveRequestsByEmployeeQuery>()).Returns(expectedResponse);
+
+        // Act
+        var result = await _controller.GetLeaveRequestsByEmployee(1);
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        await _mediator.Received(1).Send(Arg.Any<GetLeaveRequestsByEmployeeQuery>());
+    }
+
+    [Test]
+    public async Task GetAllApprovalsForManager_UserHasEmployeeId_ReturnsOkResult()
+    {
+        // Arrange
+        _authenticatedUserService.EmployeeId.Returns(1);
+        var expectedResponse = new Response<IReadOnlyList<LeaveRequestResponse>>(
+            new List<LeaveRequestResponse>().AsReadOnly());
+        _mediator.Send(Arg.Any<GetApprovalsForManagerQuery>()).Returns(expectedResponse);
+
+        // Act
+        var result = await _controller.GetAllApprovalsForManager();
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        await _mediator.Received(1).Send(Arg.Any<GetApprovalsForManagerQuery>());
+    }
+
+    [Test]
+    public async Task GetAllApprovalsForManager_UserHasNoEmployeeId_ReturnsBadRequest()
+    {
+        // Arrange
+        _authenticatedUserService.EmployeeId.Returns((int?)null);
+
+        // Act
+        var result = await _controller.GetAllApprovalsForManager();
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestResult = result as BadRequestObjectResult;
+        var response = badRequestResult.Value as Response<string>;
+        Assert.That(response.Message, Is.EqualTo("Employee ID not found"));
+    }
+
+    [Test]
+    public async Task RejectLeaveRequest_ValidRequest_ReturnsOkResult()
+    {
+        // Arrange
+        _authenticatedUserService.EmployeeId.Returns(1);
+        var rejectRequest = new RejectLeaveRequest
+        {
+            LeaveRequestId = 1,
+            RejectionComments = "Insufficient coverage"
+        };
+
+        var expectedResponse = new Response<string>("Success");
+        _mediator.Send(Arg.Any<RejectLeaveRequestCommand>()).Returns(expectedResponse);
+
+        // Act
+        var result = await _controller.RejectLeaveRequest(rejectRequest);
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        await _mediator.Received(1).Send(Arg.Any<RejectLeaveRequestCommand>());
+    }
+
+    [Test]
+    public async Task RejectLeaveRequest_UserHasNoEmployeeId_ReturnsBadRequest()
+    {
+        // Arrange
+        _authenticatedUserService.EmployeeId.Returns((int?)null);
+        var rejectRequest = new RejectLeaveRequest
+        {
+            LeaveRequestId = 1,
+            RejectionComments = "Test"
+        };
+
+        // Act
+        var result = await _controller.RejectLeaveRequest(rejectRequest);
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestResult = result as BadRequestObjectResult;
+        var response = badRequestResult.Value as Response<string>;
+        Assert.That(response.Message, Is.EqualTo("Employee ID not found"));
+    }
+
+    [Test]
+    public async Task ApproveLeaveRequest_UserHasNoEmployeeId_ReturnsBadRequest()
+    {
+        // Arrange
+        _authenticatedUserService.EmployeeId.Returns((int?)null);
+        var approveRequest = new ApproveLeaveRequest
+        {
+            LeaveRequestId = 1,
+            Status = LeaveStatus.Approved
+        };
+
+        // Act
+        var result = await _controller.ApproveLeaveRequest(approveRequest);
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        var badRequestResult = result as BadRequestObjectResult;
+        var response = badRequestResult.Value as Response<string>;
+        Assert.That(response.Message, Is.EqualTo("Employee ID not found"));
+    }
 }

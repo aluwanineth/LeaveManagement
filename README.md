@@ -43,15 +43,16 @@ LeaveManagement/
 |-----------|------------|---------|
 | **Framework** | .NET Core | 9.0 |
 | **Database** | SQL Server | 2022+ |
-| **ORM** | Entity Framework Core | 9.0 |
-| **Authentication** | JWT Bearer Tokens | - |
-| **Identity** | ASP.NET Core Identity | 9.0 |
-| **API Documentation** | Swagger/OpenAPI | 6.5.0 |
+| **ORM** | Entity Framework Core | 9.0.7 |
+| **Authentication** | JWT Bearer Tokens | 8.12.1 |
+| **Identity** | ASP.NET Core Identity | 9.0.7 |
+| **API Documentation** | Swagger/OpenAPI | 6.6.2 |
 | **Validation** | FluentValidation | 11.8.0 |
-| **Mapping** | AutoMapper | 12.0.1 |
-| **Mediator** | MediatR | 12.2.0 |
-| **Testing** | NUnit + NSubstitute | 4.0.1 |
-| **Logging** | Serilog | Latest |
+| **Mapping** | AutoMapper | 15.0.1 |
+| **Mediator** | MediatR | 13.0.0 |
+| **Testing** | NUnit | 4.6.0 |
+| **Testing** | NSubstitute | 5.3.0 |
+| **Logging** | Serilog | 8.0.1 |
 
 ## 📋 Prerequisites
 
@@ -64,7 +65,7 @@ LeaveManagement/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-repo/leave-management-system.git
+git clone https://github.com/aluwanineth/LeaveManagement.git
 cd leave-management-system
 ```
 

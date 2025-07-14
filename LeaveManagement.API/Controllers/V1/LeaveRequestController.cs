@@ -11,15 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace LeaveManagement.API.Controllers.V1;
 
 [ApiVersion("1.0")]
-public class LeaveRequestController : BaseApiController
+public class LeaveRequestController(IMediator mediator, IAuthenticatedUserService authenticatedUserService) : BaseApiController(mediator)
 {
-    private readonly IAuthenticatedUserService _authenticatedUserService;
-
-    public LeaveRequestController(IMediator mediator, IAuthenticatedUserService authenticatedUserService) : base(mediator)
-    {
-        _authenticatedUserService = authenticatedUserService;
-    }
-
     [HttpPost]
     public async Task<IActionResult> CreateLeaveRequest([FromBody] LeaveRequestRequest leaveRequestRequest)
     {
@@ -40,7 +33,7 @@ public class LeaveRequestController : BaseApiController
     [Authorize(Roles = "CEO,Manager,TeamLead")]
     public async Task<IActionResult> GetPendingApprovals()
     {
-        var approverId = _authenticatedUserService.EmployeeId;
+        var approverId = authenticatedUserService.EmployeeId;
 
         if (!approverId.HasValue)
         {
@@ -56,7 +49,7 @@ public class LeaveRequestController : BaseApiController
     [Authorize(Roles = "CEO,Manager,TeamLead")]
     public async Task<IActionResult> GetAllApprovalsForManager()
     {
-        var approverId = _authenticatedUserService.EmployeeId;
+        var approverId = authenticatedUserService.EmployeeId;
 
         if (!approverId.HasValue)
         {
@@ -73,7 +66,7 @@ public class LeaveRequestController : BaseApiController
     [Authorize(Roles = "CEO,Manager,TeamLead")]
     public async Task<IActionResult> ApproveLeaveRequest([FromBody] ApproveLeaveRequest approveLeaveRequest)
     {
-        var approverId = _authenticatedUserService.EmployeeId;
+        var approverId = authenticatedUserService.EmployeeId;
 
         if (!approverId.HasValue)
         {
@@ -94,7 +87,7 @@ public class LeaveRequestController : BaseApiController
     [Authorize(Roles = "CEO,Manager,TeamLead")]
     public async Task<IActionResult> RejectLeaveRequest([FromBody] RejectLeaveRequest rejectLeaveRequest)
     {
-        var rejectorId = _authenticatedUserService.EmployeeId;
+        var rejectorId = authenticatedUserService.EmployeeId;
 
         if (!rejectorId.HasValue)
         {
